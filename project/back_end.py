@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,session
 from wtf import RegistrationForm,Loginform
 import os
 from flask import Blueprint, render_template, flash, redirect, url_for, request, current_app
@@ -68,20 +68,31 @@ def login():
         if form.validate_on_submit():#verificate or not
             try:
                 l1,l2=db.login_check(username,passwd)#l1 means username exist status; l2 means password right or not
+                l3=db.multilogincheck(username)
                 if not l1:
                     flash('username cannot find')
                 else:
-                    if not l2:
-                        flash('password wrong')
+                    if l3:
+                        if not l2:
+                            flash('password wrong')
+                        else:
+                            session['username']=username
+                            db.login_status(username)
+                            flash('login successful')
                     else:
-                        db.login_status(username)
-                        flash('login successful')
+                        flash('Do not multipule login')
             except:
                 flash('Database failure')
                 traceback.print_exc()
                 print(traceback.format_exc())
     return render_template('login.html', form=form)
-    
+
+@app.route('/account/logout',methods=['GET','POST'])
+def logout():
+    name=session.get('username')
+    session['username']=False
+    db.logout(name)
+    return redirect(url_for('login'))
 
 
 if __name__== '__main__':

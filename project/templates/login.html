@@ -5,7 +5,9 @@
         <title>Login</title>
     </head>
     <body>
-        
+        {% if session['username']%}
+            <button onclick="javascript:window.location.href='/account/logout'">logout</button>
+        {% endif %}
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul class=flashes>

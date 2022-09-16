@@ -1,4 +1,6 @@
 Intoduction
 /:Intoduction
-/account/register:register page
-/account/login:login page
+/account/register:register account
+/account/login:login
+/accout/logout:logout
+/account/findusername:find username

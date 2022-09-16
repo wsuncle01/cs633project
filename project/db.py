@@ -1,5 +1,6 @@
 from datetime import datetime
 from pickle import FALSE
+import re
 from sqlite3 import Cursor
 from xml.dom.minidom import TypeInfo
 import MySQLdb
@@ -59,5 +60,28 @@ def login_status(name:str):
         date=str(datetime.datetime.now())
         update="UPDATE loginstatus SET status=True,last_login_date='{0}' WHERE username='{1}'".format(date,name)
         cursor.execute(update)
+    db.commit()
+    db.close()
+
+def multilogincheck(name:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    search="SELECT status FROM loginstatus WHERE username='{0}'".format(name)
+    cursor.execute(search)
+    results = cursor.fetchall()
+    if not results:
+        return True
+    else:
+        if results[0][0]==0:
+            return True
+        else:
+            return False
+
+
+def logout(name:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    update="UPDATE loginstatus SET status=False WHERE username='{0}'".format(name)
+    cursor.execute(update)
     db.commit()
     db.close()
