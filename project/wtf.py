@@ -1,6 +1,8 @@
-from wtforms import BooleanField, StringField, PasswordField, validators,SubmitField
+from wtforms import BooleanField, StringField, PasswordField, validators,SubmitField,RadioField
 from wtforms.validators import DataRequired,Email,Length,EqualTo
 from flask_wtf import FlaskForm
+
+from back_end import user_level
 
 class RegistrationForm(FlaskForm):
     username = StringField(label='Username', validators=[DataRequired()])
@@ -21,3 +23,13 @@ class send_message_form(FlaskForm):
     receive_username=StringField(label='To_user',validators=[DataRequired()])
     sendbox=StringField('Sendbox')
     submit=SubmitField(label='send')
+
+class post_events_form(FlaskForm):
+    title=StringField(label='Title',validators=[DataRequired()])
+    events=StringField(label='Events')
+    tags=StringField(label='Tags')
+    submit=SubmitField('Post')
+
+class user_level_form(FlaskForm):
+    level=RadioField(label='user level',choices=[('1','Students'),('2','Faculties'),('3','External user')])
+    submit=SubmitField('submit')

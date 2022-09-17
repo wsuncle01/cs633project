@@ -1,6 +1,5 @@
 from flask import Flask,session
 import wtf
-from wtf import RegistrationForm,Loginform
 import os
 from flask import Blueprint, render_template, flash, redirect, url_for, request, current_app
 import db
@@ -24,17 +23,12 @@ app.config['SECRET_KEY'] = os.urandom(24)
 #home page: now for introducton
 @app.route('/')
 def start():
-    with open(path+'readme.txt','r') as f: #open introduction file
-        data=f.readlines()
-        text=''
-        for i in data:
-            text+='<p>'+i+'</p>'
-    return text
+    return render_template('readme.html')
 
 #register page
 @app.route('/account/register',methods=['GET', 'POST'])
 def register():
-    form = RegistrationForm()
+    form = wtf.RegistrationForm()
     if request.method == 'POST':
         #get WTForms imformation
         username=   request.form.get('username')
@@ -63,7 +57,7 @@ def register():
 
 @app.route('/account/login',methods=['GET','POST'])
 def login():
-    form=Loginform()
+    form=wtf.Loginform()
     if request.method == 'POST':
         username    =   request.form.get('username')
         passwd      =   request.form.get('passwd')
@@ -80,6 +74,9 @@ def login():
                         else:
                             session['username']=username
                             db.login_status(username)
+                            if not db.get_user_level(username):
+                                session['user_level']='4'
+                                return redirect(url_for('user_level'))
                             flash('login successful')
                     else:
                         flash('Do not multipule login')
@@ -142,6 +139,82 @@ def messagebox():
             return json.dumps(d)
         else:
             return json.dumps({'login_status':False})
-        
+
+
+@app.route('/events/post',methods=['POST','GET'])
+def post_event():
+    form=wtf.post_events_form()
+    if request.method=='POST':
+        events=request.form.get('events')
+        tags=request.form.get('tags') 
+        title=request.form.get('title')
+        if form.validate_on_submit():
+            name=session.get('username')
+            if name:
+                db.postmessage(name,title,events,tags)
+                flash('Post successfully')
+            else:
+                flash('Please login first')
+        else:
+            for i in form.errors:
+                flash(form.errors[i],'error')
+    return render_template('postevent.html',form=form)
+
+@app.route('/events',methods=['POST','GET'])
+def events():
+    if request.method=='GET':
+        name=session.get('username')
+        if name:
+            eventsinfo=db.events()
+            d={}
+            eid=[]
+            title=[]
+            tags=[]
+            tagid=[]
+            author=[]
+            events=[]
+            date=[]
+            for i in eventsinfo:# convert turple to dict
+                eid.append(i[0])
+                title.append(i[1])
+                tags.append(i[2])
+                tagid.append(i[3])
+                author.append(i[4])
+                events.append(i[5])
+                date.append(str(i[6]))
+            d['id']=eid
+            d['title']=title
+            d['tags']=tags
+            d['tagid']=tagid
+            d['author']=author
+            d['events']=events
+            d['date']=date
+            return json.dumps(d)
+        else:
+            return json.dumps({'login_status':False})
+
+@app.route('/account/user_level',methods=['POST','GET'])
+def user_level():
+    form=wtf.user_level_form()
+    level=session.get('user_level')
+    name=session.get('username')
+    if request.method == "POST":
+        if level == '0' or level == '4':
+            if level == '4':
+                session['user_level']=db.get_user_level(name)
+        else:
+            return render_template('level_warning.html')
+        if form.validate_on_submit():
+            if name:
+                radio = form.level.data
+                db.set_user_level(radio,name)
+                return redirect(url_for('start'))
+            else:
+                flash('Please login first')
+        else:
+            for i in form.errors:
+                flash(form.errors[i],'error')
+    return render_template('user_level.html',form=form)
+
 if __name__== '__main__':
     app.run()

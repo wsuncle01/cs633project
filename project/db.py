@@ -1,11 +1,15 @@
+from asyncio.windows_events import NULL
 from datetime import datetime
 from pickle import FALSE
 import re
 from select import select
 from sqlite3 import Cursor
+from turtle import up
+from unittest import result
 from xml.dom.minidom import TypeInfo
 import MySQLdb
 import datetime
+from collections import defaultdict
 
 dbpassword="mysqlQq1538773813hz"
 databasename="cs633project"
@@ -105,3 +109,93 @@ def readmessage(username:str):
     db.commit()
     db.close()
     return results
+
+
+def taglistupdate(tags:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    select="SELECT * FROM tag"
+    cursor.execute(select)
+    results=cursor.fetchall()
+    exist_tag=defaultdict(int)
+    for i in results:
+        for j in i[1].split(','):
+            exist_tag[j]+=i[2]
+    curent_tag=exist_tag.copy()
+    taglist=tags.split(',')
+    for i in taglist:
+        exist_tag[i]+=1
+    for i in exist_tag:
+        if i in curent_tag:
+            update="UPDATE tag SET queto_num={0} WHERE tagname='{1}'".format(exist_tag[i],i)
+            cursor.execute(update)
+        else:
+            insert="INSERT INTO tag(tagname,queto_num) VALUES ('{0}',{1})".format(i,exist_tag[i])
+            cursor.execute(insert)
+    db.commit()
+    db.close()
+
+def get_tagid(name:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    select="SELECT tagid FROM tag WHERE tagname='{0}' limit 1".format(name)
+    cursor.execute(select)
+    result=cursor.fetchall()
+    db.commit()
+    db.close()
+    return result[0][0]
+
+def postmessage(username:str,title:str,event:str,tags:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    taglistupdate(tags)
+    taglist=tags.split(',')
+    tagid=""
+    for i in taglist:
+        tagid=tagid+str(get_tagid(i))+','
+    date=str(datetime.datetime.now())
+    insert="INSERT INTO events(title,tags,tagid,author,event,date) VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')".format(title,
+                                                                                                                        tags,
+                                                                                                                        tagid,
+                                                                                                                        username,
+                                                                                                                        event,
+                                                                                                                        date)
+    cursor.execute(insert)
+    db.commit()
+    db.close()
+
+def events():
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    select="SELECT * FROM events"
+    cursor.execute(select)
+    results=cursor.fetchall()
+    db.commit()
+    db.close()
+    return results
+
+def set_user_level(level:str,username:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    select="SELECT id,status FROM userlevel WHERE username='{0}' limit 1".format(username)
+    cursor.execute(select)
+    results=cursor.fetchall()
+    if not results:
+        insert="INSERT INTO userlevel(username,status) VALUES ('{0}','{1}')".format(username,level)
+        cursor.execute(insert)
+    else:
+        update="UPDATE userlevel SET status='{0}' WHERE username='{1}'".format(level,username)
+        cursor.execute(update)
+    db.commit()
+    db.close()
+
+def get_user_level(username:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    select="SELECT status FROM userlevel WHERE username='{0}' limit 1".format(username)
+    cursor.execute(select)
+    results=cursor.fetchall()
+    if results:
+        return results[0][0]
+    else:
+        return NULL

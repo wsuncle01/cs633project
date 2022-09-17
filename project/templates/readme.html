@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            index
+        </title>
+    </head>
+    <body>
+        {% if session['username']%}
+            <button onclick="javascript:window.location.href='/account/logout'">logout</button>
+        {% endif %}
+        <h1>Intoduction</h1>
+        <li>/:Intoduction</li>
+        <li>/account/register:register account</li>
+        <li>/account/login:login</li>
+        <li>/accout/logout:logout</li>
+        <li>/communication/send_message:send message</li>
+        <li>/communication/mailbox:return message from database</li>
+        <li>/events/post:post envents</li>
+        <li>/events</li>
+        <li>/account/user_level</li>
+    </body>
+</html>
+
+
