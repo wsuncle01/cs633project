@@ -1,9 +1,11 @@
 from flask import Flask,session
+import wtf
 from wtf import RegistrationForm,Loginform
 import os
 from flask import Blueprint, render_template, flash, redirect, url_for, request, current_app
 import db
 import traceback
+import json
 
 #get workfold path
 file=str(__file__)
@@ -94,6 +96,52 @@ def logout():
     db.logout(name)
     return redirect(url_for('login'))
 
+@app.route('/communication/send_message',methods=['GET','POST'])
+def send_message():
+    form=wtf.send_message_form()
+    if request.method=='POST':
+        name=request.form.get('receive_username')
+        message=request.form.get('sendbox')
+        if form.validate_on_submit():#verificate or not
+            if session.get('username'):
+                if not db.name_exsit_status(name):
+                    db.sendmessage(session.get('username'),name,message)
+                    flash('Message has been sent')
+                else:
+                    flash('Target user does not exist')
+            else:
+                flash('Please login first')
+        else:
+            for i in form.errors:
+                flash(form.errors[i],'error') 
+    return render_template('message_send_page.html',form=form)
 
+@app.route('/communication/mailbox',methods=['POST','GET'])
+def messagebox():
+    if request.method=='GET':
+        name=session.get('username')
+        if name:
+            message=db.readmessage(name)
+            d={}
+            mid=[]
+            fuser=[]
+            tuser=[]
+            mes=[]
+            dat=[]
+            for i in message:# convert turple to dict
+                mid.append(i[0])
+                fuser.append(i[1])
+                tuser.append(i[2])
+                mes.append(i[3])
+                dat.append(str(i[4]))
+            d['id']=mid
+            d['from_user']=fuser
+            d['to_user']=tuser
+            d['message']=mes
+            d['date']=dat
+            return json.dumps(d)
+        else:
+            return json.dumps({'login_status':False})
+        
 if __name__== '__main__':
     app.run()

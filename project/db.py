@@ -1,6 +1,7 @@
 from datetime import datetime
 from pickle import FALSE
 import re
+from select import select
 from sqlite3 import Cursor
 from xml.dom.minidom import TypeInfo
 import MySQLdb
@@ -85,3 +86,22 @@ def logout(name:str):
     cursor.execute(update)
     db.commit()
     db.close()
+
+def sendmessage(from_user:str,to_user:str,message:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    date=str(datetime.datetime.now())
+    insert="INSERT INTO messagebox(from_user,to_user,message,date) VALUES ('{0}','{1}','{2}','{3}')".format(from_user,to_user,message,date)
+    cursor.execute(insert)
+    db.commit()
+    db.close()
+
+def readmessage(username:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    select="SELECT * FROM messagebox WHERE to_user='{0}'".format(username)
+    cursor.execute(select)
+    results=cursor.fetchall()
+    db.commit()
+    db.close()
+    return results

@@ -16,3 +16,8 @@ class Loginform(FlaskForm):
     username=StringField(label='Username',validators=[DataRequired()])
     passwd=StringField('Password',validators=[DataRequired()])
     submit=SubmitField(label='login')
+
+class send_message_form(FlaskForm):
+    receive_username=StringField(label='To_user',validators=[DataRequired()])
+    sendbox=StringField('Sendbox')
+    submit=SubmitField(label='send')

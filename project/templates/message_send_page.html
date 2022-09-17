@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            message_send_page
+        </title>
+    </head>
+    <body>
+        {% if session['username']%}
+            <button onclick="javascript:window.location.href='/account/logout'">logout</button>
+        {% endif %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <form method="post">
+            {{form.csrf_token}}
+            {{form.receive_username.label}}{{form.receive_username}}<br>
+            {{form.sendbox.label}}{{form.sendbox}}<br>
+            {{form.submit}}
+        </form>
+    </body>
+</html>
