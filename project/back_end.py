@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, flash, redirect, url_for, request,
 import db
 import traceback
 import json
+import send_mail
 
 #get workfold path
 file=str(__file__)
@@ -215,6 +216,19 @@ def user_level():
             for i in form.errors:
                 flash(form.errors[i],'error')
     return render_template('user_level.html',form=form)
+
+
+@app.route('/account/confirm_email',methods=["POST","GET"])
+def confirm_email():
+    mailadress=request.args.get('mail_adress')
+    vercode=send_mail.confirm_email(mailadress)
+    if vercode=="False":
+        d={'status':False}
+        return json.dumps(d)
+    else:
+        session['vercode']=vercode
+        d={'status':True,'vercode':vercode}
+        return json.dumps(d)
 
 if __name__== '__main__':
     app.run()
