@@ -1,3 +1,4 @@
+from ast import keyword
 from asyncio.windows_events import NULL
 from datetime import datetime
 from pickle import FALSE
@@ -195,7 +196,25 @@ def get_user_level(username:str):
     select="SELECT status FROM userlevel WHERE username='{0}' limit 1".format(username)
     cursor.execute(select)
     results=cursor.fetchall()
+    db.commit()
+    db.close()
     if results:
         return results[0][0]
     else:
         return NULL
+
+def search_events(q:str):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    keywords=q.split(" ")
+    print(keywords[0])
+    select="SELECT id FROM events WHERE title like '%{0}%' or tags like '%{0}%' or event like '%{0}%' ".format(keywords[0])
+    i=1
+    while i<len(keywords):
+        select=select+"or title like '%{0}%' or tags like '%{0}%' or event like '%{0}%'".format(keywords[i])
+        i+=1
+    cursor.execute(select)
+    results=cursor.fetchall()
+    db.commit()
+    db.close()
+    return results

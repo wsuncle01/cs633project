@@ -230,5 +230,17 @@ def confirm_email():
         d={'status':True,'vercode':vercode}
         return json.dumps(d)
 
+@app.route('/events/search',methods=['POST','GET'])
+def search_event():
+    q=request.args.get('q')
+    results=db.search_events(q=q)
+    d={}
+    id=[]
+    for i in results:
+        id.append(i[0])
+    d['id']=id
+    return json.dumps(d)
+
+
 if __name__== '__main__':
     app.run()
