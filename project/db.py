@@ -11,11 +11,15 @@ from xml.dom.minidom import TypeInfo
 import MySQLdb
 import datetime
 from collections import defaultdict
+from pymysql.converters import escape_string
 
 dbpassword="mysqlQq1538773813hz"
 databasename="cs633project"
 
 def register(name:str,password:str,email:str):
+    name=escape_string(name)
+    password=escape_string(password)
+    email=escape_string(email)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor = db.cursor()
     date=str(datetime.datetime.now()).split(' ')[0]
@@ -25,6 +29,7 @@ def register(name:str,password:str,email:str):
     db.close()
 
 def name_exsit_status(name:str):
+    name=escape_string(name)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor = db.cursor()
     search="SELECT username,password FROM userinfo WHERE username='{0}'".format(name)
@@ -36,6 +41,8 @@ def name_exsit_status(name:str):
         return False
 
 def login_check(name:str,password:str):
+    name=escape_string(name)
+    password=escape_string(password)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     search="SELECT username,password FROM userinfo WHERE username='{0}'".format(name)
@@ -52,6 +59,7 @@ def login_check(name:str,password:str):
     return True,False
 
 def login_status(name:str):
+    name=escape_string(name)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     search="SELECT username FROM loginstatus WHERE username='{0}'".format(name)
@@ -70,6 +78,7 @@ def login_status(name:str):
     db.close()
 
 def multilogincheck(name:str):
+    name=escape_string(name)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     search="SELECT status FROM loginstatus WHERE username='{0}'".format(name)
@@ -85,6 +94,7 @@ def multilogincheck(name:str):
 
 
 def logout(name:str):
+    name=escape_string(name)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     update="UPDATE loginstatus SET status=False WHERE username='{0}'".format(name)
@@ -93,6 +103,9 @@ def logout(name:str):
     db.close()
 
 def sendmessage(from_user:str,to_user:str,message:str):
+    from_user=escape_string(from_user)
+    to_user=escape_string(to_user)
+    message=escape_string(message)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     date=str(datetime.datetime.now())
@@ -102,6 +115,7 @@ def sendmessage(from_user:str,to_user:str,message:str):
     db.close()
 
 def readmessage(username:str):
+    username=escape_string(username)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     select="SELECT * FROM messagebox WHERE to_user='{0}'".format(username)
@@ -113,6 +127,7 @@ def readmessage(username:str):
 
 
 def taglistupdate(tags:str):
+    tags=escape_string(tags)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     select="SELECT * FROM tag"
@@ -137,6 +152,7 @@ def taglistupdate(tags:str):
     db.close()
 
 def get_tagid(name:str):
+    name=escape_string(name)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     select="SELECT tagid FROM tag WHERE tagname='{0}' limit 1".format(name)
@@ -147,6 +163,10 @@ def get_tagid(name:str):
     return result[0][0]
 
 def postmessage(username:str,title:str,event:str,tags:str):
+    username=escape_string(username)
+    title=escape_string(title)
+    event=escape_string(event)
+    tags=escape_string(tags)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     taglistupdate(tags)
@@ -176,6 +196,8 @@ def events():
     return results
 
 def set_user_level(level:str,username:str):
+    level=escape_string(level)
+    username=escape_string(username)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     select="SELECT id,status FROM userlevel WHERE username='{0}' limit 1".format(username)
@@ -191,6 +213,7 @@ def set_user_level(level:str,username:str):
     db.close()
 
 def get_user_level(username:str):
+    username=escape_string(username)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     select="SELECT status FROM userlevel WHERE username='{0}' limit 1".format(username)
@@ -204,15 +227,33 @@ def get_user_level(username:str):
         return NULL
 
 def search_events(q:str):
+    q=escape_string(q)
     db=MySQLdb.connect("localhost","root",dbpassword,databasename)
     cursor=db.cursor()
     keywords=q.split(" ")
-    print(keywords[0])
     select="SELECT id FROM events WHERE title like '%{0}%' or tags like '%{0}%' or event like '%{0}%' ".format(keywords[0])
     i=1
     while i<len(keywords):
         select=select+"or title like '%{0}%' or tags like '%{0}%' or event like '%{0}%'".format(keywords[i])
         i+=1
+    cursor.execute(select)
+    results=cursor.fetchall()
+    db.commit()
+    db.close()
+    return results
+
+def delete_events(q:int):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    delete="delete from events where id={0}".format(q)
+    cursor.execute(delete)
+    db.commit()
+    db.close()
+
+def select_events(q:int):
+    db=MySQLdb.connect("localhost","root",dbpassword,databasename)
+    cursor=db.cursor()
+    select="select * from events where id={0}".format(q)
     cursor.execute(select)
     results=cursor.fetchall()
     db.commit()

@@ -241,6 +241,27 @@ def search_event():
     d['id']=id
     return json.dumps(d)
 
+@app.route('/events/delete',methods=['POST','GET'])
+def delete_event():
+    q=request.args.get('q')
+    level=session.get('user_level')
+    name=session.get('username')
+    result=db.select_events(q=int(q))
+    if result[0][4]==name or level ==0:
+        db.delete_events(q=int(q))
+    return redirect(url_for('events'))
+
+@app.route('/events/show',methods=['POST','GET'])
+def show_event():
+    q=request.args.get('q')
+    result=db.select_events(q=int(q))
+    d={}
+    d['title']=result[0][1]
+    d['tags']=result[0][2]
+    d['author']=result[0][4]
+    d['events']=result[0][5]
+    d['date']=str(result[0][6])
+    return json.dumps(d)
 
 if __name__== '__main__':
     app.run()
