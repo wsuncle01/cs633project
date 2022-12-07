@@ -9,6 +9,13 @@ class UserBase(BaseModel):
 	email: str
 
 class UserCreate(UserBase):
+	role: int
+	password: str
+
+	class Config:
+		orm_mode = True
+
+class UserLogin(UserBase):
 	password: str
 
 	class Config:
@@ -17,6 +24,7 @@ class UserCreate(UserBase):
 class User(UserBase):
 	id: int
 	date_created: datetime
+	role: int
 
 	class Config:
 		orm_mode = True
@@ -47,7 +55,8 @@ class QuestionCreate(QuestionBase):
 
 class Question(QuestionBase):
 	id: int
-	owner_id: int
+	role: int
+	owner_id: int	
 	pub_date: datetime
 
 	class Config:
@@ -55,3 +64,8 @@ class Question(QuestionBase):
 
 class QuestionInfo(Question):
 	choices: List[ChoiceList] = []
+
+class Answered(BaseModel):
+	id: int
+	question_id: int
+	user_id: int

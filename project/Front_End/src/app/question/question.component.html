@@ -1,0 +1,25 @@
+
+  <mat-card class="title_center">
+    <mat-card-title>{{question.question_text}}</mat-card-title>
+</mat-card>
+
+<section>
+    <div class="example-button-row" *ngFor="let choice of question.choices">
+      <button mat-raised-button color="primary" (click)="displayResult(choice.id)">{{choice.choice_text}}</button>
+    </div>
+  </section>
+
+
+
+  <!-- <mat-card class="title_center">
+    <mat-card-title>{{question.question_text}}</mat-card-title>
+</mat-card>
+
+<h1>You have already answered this question!</h1>
+<button (click) = "result()">Results</button> -->
+
+
+
+
+
+

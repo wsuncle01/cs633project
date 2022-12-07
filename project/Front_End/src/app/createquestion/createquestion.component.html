@@ -1,0 +1,17 @@
+<form class="form">
+<mat-form-field class="full-width">
+    <mat-label>Enter Question</mat-label>
+    <input matInput [(ngModel)]="question" [ngModelOptions]="{standalone: true}">
+</mat-form-field>
+
+<button (click)="addInput()">Add Choice</button>
+  <div *ngFor="let input of choices">
+    <mat-form-field class="full-width">
+        <mat-label>Enter choice text</mat-label>
+        <textarea matInput [(ngModel)]="input.value" [ngModelOptions]="{standalone: true}"></textarea>
+    </mat-form-field>
+  </div>
+</form>
+
+<button mat-button (click)="submit()">Submit Question</button>
+  

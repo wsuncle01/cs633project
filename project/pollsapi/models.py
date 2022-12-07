@@ -11,6 +11,7 @@ class Question(Base):
 	__tablename__ = "question"
 	id = Column(Integer, primary_key=True)
 	owner_id = Column(Integer, ForeignKey("users.id"))
+	role = Column(Integer)
 	question_text = Column(String(200))
 	pub_date = Column(DateTime, server_default = func.now())
 
@@ -30,6 +31,7 @@ class Choice(Base):
 class User(Base):
 	__tablename__ = "users"
 	id = Column(Integer, primary_key = True, index = True)
+	role = Column(Integer)
 	email = Column(String(20), unique = True, index = True)
 	hashed_password = Column(String(1000))
 	date_created = Column(DateTime, server_default = func.now())
@@ -38,4 +40,12 @@ class User(Base):
 
 	def verify_password(self, password:str):
 		return hash.bcrypt.verify(password, self.hashed_password)
+
+class Answered(Base):
+	__tablename__ = "answered"
+	id = Column(Integer, primary_key = True)
+	question_id = Column(Integer, ForeignKey('question.id', ondelete='CASCADE'))
+	user_id = Column(Integer, ForeignKey('users.id'))
+
+
 

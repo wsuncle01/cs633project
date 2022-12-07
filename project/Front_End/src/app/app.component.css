@@ -1,0 +1,44 @@
+
+.example-spacer {
+    flex: 1 1 auto;
+  }
+
+  @media only screen and (min-width: 768px) {
+
+  .searchbar{width: 450px !important; position: absolute ;left: 120px; display: inline-block;  }
+
+  }
+
+
+  .dialog-responsive {
+    width: 90%;
+
+}
+
+@media only screen and (max-width: 760px) {
+    .dialog-responsive {
+        width: 90%
+
+    }
+
+  .signup{
+    width:600px;
+  }
+  @media only screen and (max-width: 760px) {
+    .signup{
+      width:60%;
+    }
+  }
+
+
+
+}
+
+
+.abc{
+
+  color: antiquewhite;
+  left: 20px;
+}
+
+

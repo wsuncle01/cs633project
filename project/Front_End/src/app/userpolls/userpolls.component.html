@@ -1,0 +1,14 @@
+<div class="container">
+    <div class="row">
+      <div class="col-md-3 mx-auto my-5" *ngFor="let poll of polls">
+        <mat-card role="button" tabindex="0" class="is-focusable" (click)="displayQuestion(poll.id)" (keydown.enter)="displayQuestion(poll.id)" (keydown.space)="displayQuestion(poll.id); $event.preventDefault()">
+          <mat-card-header>
+            <mat-card-title>{{poll.title}}</mat-card-title>
+            <mat-card-subtitle>{{poll.id}}</mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+
+   
