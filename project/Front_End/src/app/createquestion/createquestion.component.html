@@ -1,17 +1,30 @@
+
 <form class="form">
-<mat-form-field class="full-width">
-    <mat-label>Enter Question</mat-label>
+  <div class="row">
+    <h1>
+      Hurry Up!!!
+    </h1>
+    <p>
+      You can just go ahead and create your questions below for polls you want!!!
+    </p>
+  </div>
+<mat-form-field class="full-width center">
+    <mat-label class="center font_back">Add your question here</mat-label>
     <input matInput [(ngModel)]="question" [ngModelOptions]="{standalone: true}">
 </mat-form-field>
-
-<button (click)="addInput()">Add Choice</button>
+<div class="col-sm"></div>
+<div class="col-sm"></div>
+<button (click)="addInput()" class="col-sm">Add Choice</button>
+<div class="col-sm"></div>
+<div class="col-md"></div>
   <div *ngFor="let input of choices">
     <mat-form-field class="full-width">
-        <mat-label>Enter choice text</mat-label>
+        <mat-label class="center font_back">Tap to add choice(s)</mat-label>
         <textarea matInput [(ngModel)]="input.value" [ngModelOptions]="{standalone: true}"></textarea>
     </mat-form-field>
   </div>
 </form>
 
-<button mat-button (click)="submit()">Submit Question</button>
+
+<button mat-button (click)="submit()" style="position: absolute;transform: translate(140%, 20%);">Submit Question</button>
   
