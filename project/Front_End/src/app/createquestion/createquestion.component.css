@@ -7,3 +7,22 @@
   .full-width {
     width: 100%;
   }
+
+  .center {
+    display: flex;
+    justify-content: center;
+  }
+
+  .center_button {
+    margin: 0;
+    position: absolute;
+    top: 20%;
+    left: 40%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+
+  .font_back{
+    font-size: medium;
+    color: black;
+  }
